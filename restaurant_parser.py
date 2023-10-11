@@ -87,5 +87,20 @@ for restaurant in restaurants:
         if price == "0" or price == "" or price == " " or price == " ":
             price = "0 Kč (nebo neuvedeno)"
         print(str(meal.day) + ". " + meal.name + " - Cena: " + price)
-
 driver.quit()
+
+# generate html file with menu, use utf-8 encoding and czech language
+f = open("./html/menu.html", "w", encoding="utf-8")
+f.write("<html><head><meta charset=\"utf-8\"></head><body>")
+for restaurant in restaurants:
+    # if restaurant has no menu, skip it
+    if len(restaurant.get_menu().get_meals()) == 0:
+        continue
+
+    f.write("<h1>" + restaurant.get_name() + "</h1>")
+    for meal in restaurant.get_menu().get_meals():
+        # print in format "meal_index. meal_name - Cena: meal_price" if the meal_price is 0 or null, print ""
+        price = meal.get_price()
+        if price == "0" or price == "" or price == " " or price == " ":
+            price = "0 Kč (nebo neuvedeno)"
+        f.write("<p>" + str(meal.day) + ". " + meal.name + " - Cena: " + price + "</p>")
