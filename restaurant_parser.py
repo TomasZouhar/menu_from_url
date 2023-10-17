@@ -1,6 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 
+
 class Meal:
     name = ''
     price = ''
@@ -31,16 +32,21 @@ class WeekMenu:
 class Restaurant:
     name = ''
     menu = WeekMenu()
+    distance = "0 m"
 
-    def __init__(self, name, res_menu):
+    def __init__(self, name, res_menu, distance):
         self.name = name
         self.menu = res_menu
+        self.distance = distance
 
     def get_menu(self):
         return self.menu
 
     def get_name(self):
         return self.name
+
+    def get_distance(self):
+        return self.distance
 
 
 # open the browser
@@ -58,9 +64,11 @@ restaurants = []
 for restaurant in soup.findAll('div', attrs={'class': 'menicka_detail'}):
     # get the name of the restaurant
     restaurant_name = restaurant.find('div', attrs={'class': 'nazev'}).text
+    restaurant_distance = restaurant.find('span', attrs={'class': 'dist'}).text
     # get menu for the restaurant
     # menu is nested in div "menicka_detail" -> div "menicka" -> div "nabidka_1 (or nabidka)" -> element i
-    restaurant_menu_items = restaurant.find('div', attrs={'class': 'menicka'}).findAll('div', attrs={'class': 'nabidka_1' or 'nabidka'})
+    restaurant_menu_items = restaurant.find('div', attrs={'class': 'menicka'}).findAll('div', attrs={
+        'class': 'nabidka_1' or 'nabidka'})
     prices = restaurant.find('div', attrs={'class': 'menicka'}).findAll('div', attrs={'class': 'cena'})
     week_menu = WeekMenu()
 
@@ -72,7 +80,7 @@ for restaurant in soup.findAll('div', attrs={'class': 'menicka_detail'}):
         week_menu.add_meal(Meal(meal_item_name, price, mealIndex))
         mealIndex += 1
 
-    restaurants.append(Restaurant(restaurant_name, week_menu))
+    restaurants.append(Restaurant(restaurant_name, week_menu, restaurant_distance))
 
 # print the menu for all restaurants
 for restaurant in restaurants:
@@ -80,7 +88,7 @@ for restaurant in restaurants:
     if len(restaurant.get_menu().get_meals()) == 0:
         continue
 
-    print ("------- RESTAURACE: "+ restaurant.get_name() +" --------")
+    print("------- RESTAURACE: " + restaurant.get_name() + " --------")
     for meal in restaurant.get_menu().get_meals():
         # print in format "meal_index. meal_name - Cena: meal_price" if the meal_price is 0 or null, print ""
         price = meal.get_price()
@@ -90,14 +98,26 @@ for restaurant in restaurants:
 driver.quit()
 
 # generate html file with menu, use utf-8 encoding and czech language
+# first generate list with all restaurants, on click on the list item navigate to #restaurant-name (U Karla -> #u-karla) anchor
 f = open("./html/menu.html", "w", encoding="utf-8")
 f.write("<html><head><meta charset=\"utf-8\"></head><body>")
+f.write("<h1>Menu</h1>")
+f.write("<ul>")
+for restaurant in restaurants:
+    # if restaurant has no menu, skip it
+    if len(restaurant.get_menu().get_meals()) == 0:
+        continue
+    f.write("<li><a href=\"#" + restaurant.get_name().replace(" ",
+                                                              "-").lower() + "\">" + restaurant.get_name() + "</a></li>")
+f.write("</ul>")
+
+# then write all restaurants with their ids
 for restaurant in restaurants:
     # if restaurant has no menu, skip it
     if len(restaurant.get_menu().get_meals()) == 0:
         continue
 
-    f.write("<h1>" + restaurant.get_name() + "</h1>")
+    f.write("<h1 id=\"" + restaurant.get_name().replace(" ", "-").lower() + "\">" + restaurant.get_name() + " (" + restaurant.get_distance() + ") </h1>")
     for meal in restaurant.get_menu().get_meals():
         # print in format "meal_index. meal_name - Cena: meal_price" if the meal_price is 0 or null, print ""
         price = meal.get_price()
