@@ -148,7 +148,9 @@ f.write("li a:hover { background-color: #111; }")
 f.write(".restaurant { float: left; width: 48%; }")
 # style for tags
 f.write(".tags { float: left; width: 100%; }")
-
+# style for toggle button so it looks modern and nice
+f.write(".toggle-button { background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: "
+        "center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; }")
 f.write("</style>")
 
 f.write("<h1>Menu dne " + str(datetime.date.today()) + "</h1>")
@@ -177,6 +179,21 @@ for restaurant in restaurants:
 # sort the tags by their count
 sorted_tags = sorted(tags.items(), key=lambda x: x[1], reverse=True)
 
+# toggle button for toggling visibility of .tags div
+f.write("<button class=\"toggle-button\" onclick=\"var x = document.getElementsByClassName('tags')[0]; if ("
+        "x.style.display === 'none') { x.style.display = 'block'; } else { x.style.display = 'none'; "
+        "}\">Zobrazit/skrýt tagy</button>")
+
+# generate the list of tags, if user clicks the tag, find all restaurants with this tag and show them
+f.write("<div style=\"display: none\" class=\"tags\">")
+f.write("<h2 class=\"tag\">Tagy</h2>")
+f.write("<ul>")
+for tag in sorted_tags:
+    # a will scroll to first element with class "has-tag-tagname" (javascript function scrollToTag)
+    f.write("<li><a onclick=\"scrollToTag('has-tag-" + tag[0] + "')\">" + tag[0] + " (" + str(tag[1]) + ")</a></li>")
+f.write("</ul>")
+f.write("</div>")
+
 f.write("<div class=\"wrapper\">")
 # then write all restaurants with their ids
 for restaurant in restaurants:
@@ -186,38 +203,44 @@ for restaurant in restaurants:
     f.write("<div class=\"restaurant\">")
     f.write("<h1 id=\"" + restaurant.get_name().replace(" ",
                                                         "-").lower() + "\"")
-    # if restaurant has tags, add them to the restaurant class in format has-tag-tag1, has-tag-tag2 etc.
-    if len(restaurant.get_tags()) > 0:
-        f.write(" class=\"has-tag-")
-        for tag in restaurant.get_tags():
-            f.write(tag + " has-tag-")
-        f.write("\"")
-
     f.write("/>" + restaurant.get_name() + " (" + restaurant.get_distance() + ") </h1>")
     for meal in restaurant.get_menu().get_meals():
         # print in format "meal_index. meal_name - Cena: meal_price" if the meal_price is 0 or null, print ""
         price = meal.get_price()
         if price == "0" or price == "" or price == " " or price == " ":
             price = "0 Kč (nebo neuvedeno)"
-        f.write("<p>" + str(meal.day) + ". " + meal.name + " - Cena: " + price + "</p>")
-    f.write("</div>")
-f.write("</div>")
+        f.write("<p ")
 
-# generate the list of tags, if user clicks the tag, find all restaurants with this tag and show them
-f.write("<div class=\"tags\">")
-f.write("<h2>Tagy</h2>")
-f.write("<ul>")
-for tag in sorted_tags:
-    # a will scroll to first element with class "has-tag-tagname" (javascript function scrollToTag)
-    f.write("<li><a onclick=\"scrollToTag('has-tag-" + tag[0] + "')\">" + tag[0] + " (" + str(tag[1]) + ")</a></li>")
-f.write("</ul>")
+        if len(restaurant.get_tags()) > 0:
+            f.write(" class=\"tagged has-tag-")
+            for tag in restaurant.get_tags():
+                # write tag only if meal name contains it
+                if tag in meal.name.lower():
+                    f.write(tag + " has-tag-")
+
+            f.write("\"")
+
+        f.write(">" + str(meal.day) + ". " + meal.name + " - Cena: " + price + "</p>")
+    f.write("</div>")
 f.write("</div>")
 
 f.write("</body>")
 f.write("<script>")
+# function to toggle tags
+
 # script for scrolling to first restaurant with class "has-tag-tagname" (scroll smoothly)
 f.write("function scrollToTag(tag) {")
 f.write("var element = document.getElementsByClassName(tag)[0];")
+# color all elements with classes "tagged" to light blue
+f.write("var tagged = document.getElementsByClassName('tagged');")
+f.write("for (var i = 0; i < tagged.length; i++) {")
+f.write("tagged[i].style.backgroundColor = 'white';")
+f.write("}")
+# color all elements with class "has-tag-tagname" to lime
+f.write("var elements = document.getElementsByClassName(tag);")
+f.write("for (var i = 0; i < elements.length; i++) {")
+f.write("elements[i].style.backgroundColor = 'lime';")
+f.write("}")
 f.write("element.scrollIntoView({behavior: 'smooth'});")
 f.write("}")
 f.write("</script>")
