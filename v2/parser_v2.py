@@ -70,7 +70,7 @@ def write_out(file, text):
 # Replace the code that opens the browser with an HTTP request
 url = "https://www.menicka.cz/moje-poloha.html?m=menicka&gps=49.210166676258375_16.599495697430932"
 response = requests.get(url)
-soup = BeautifulSoup(response.content, features="html.parser")
+soup = BeautifulSoup(response.content, features="docs.parser")
 
 # get the list of restaurants
 restaurants = []
@@ -133,10 +133,10 @@ for restaurant in restaurants:
     #        price = "0 Kč (nebo neuvedeno)"
     #    print(str(meal.day) + ". " + meal.name + " - Cena: " + price)
 
-# generate html file with menu, use utf-8 encoding and czech language
+# generate docs file with menu, use utf-8 encoding and czech language
 # first generate list with all restaurants, on click on the list item navigate to #restaurant-name (U Karla -> #u-karla) anchor
-f = open("../html/index.html", "w", encoding="utf-8")
-write_out(f, "<html><head><meta charset=\"utf-8\"></head><body>")
+f = open("../docs/index.html", "w", encoding="utf-8")
+write_out(f, "<docs><head><meta charset=\"utf-8\"></head><body>")
 write_out(f, "<style>")
 # make the page pretty
 write_out(f, "body { font-family: Arial, Helvetica, sans-serif; }")
@@ -247,4 +247,4 @@ write_out(f, "}")
 write_out(f, "element.scrollIntoView({behavior: 'smooth'});")
 write_out(f, "}")
 write_out(f, "</script>")
-write_out(f, "</html>")
+write_out(f, "</docs>")

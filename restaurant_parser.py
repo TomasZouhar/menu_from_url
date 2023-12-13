@@ -66,7 +66,7 @@ driver.get(url)
 
 # get the page content
 content = driver.page_source
-soup = BeautifulSoup(content, features="html.parser")
+soup = BeautifulSoup(content, features="docs.parser")
 
 # get the list of restaurants
 restaurants = []
@@ -130,10 +130,10 @@ for restaurant in restaurants:
     #    print(str(meal.day) + ". " + meal.name + " - Cena: " + price)
 driver.quit()
 
-# generate html file with menu, use utf-8 encoding and czech language
+# generate docs file with menu, use utf-8 encoding and czech language
 # first generate list with all restaurants, on click on the list item navigate to #restaurant-name (U Karla -> #u-karla) anchor
 f = open("../restaurant_menu/TomasZouhar.github.io/index.html", "w", encoding="utf-8")
-f.write("<html><head><meta charset=\"utf-8\"></head><body>")
+f.write("<docs><head><meta charset=\"utf-8\"></head><body>")
 f.write("<style>")
 # make the page pretty
 f.write("body { font-family: Arial, Helvetica, sans-serif; }")
@@ -244,4 +244,4 @@ f.write("}")
 f.write("element.scrollIntoView({behavior: 'smooth'});")
 f.write("}")
 f.write("</script>")
-f.write("</html>")
+f.write("</docs>")
