@@ -25,7 +25,7 @@ jobs:
 
     - name: Run parser_v2.py
       run: |
-        python v2/parser_v2.py > html/index.html
+        python v2/parser_v2.py > docs/index.html
 
     - name: Debugging - Print directory contents
       run: ls -R
