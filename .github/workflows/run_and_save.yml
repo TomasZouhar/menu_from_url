@@ -1,0 +1,35 @@
+name: Daily Restaurant Parser
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # Schedule to run at 4 AM every day
+
+jobs:
+  run-parser:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x  # Specify your Python version
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run parser_v2.py
+      run: |
+        python v2/parser_v2.py > html/index.html
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add html/index.html
+        git commit -m "Update index.html with parser_v2.py result"
+        git push
