@@ -2,7 +2,7 @@ name: Daily Restaurant Parser
 
 on:
   schedule:
-    - cron: '25 10 * * *'  # Schedule to run at 4 AM every day
+    - cron: '30 10 * * *'  # Schedule to run at 4 AM every day
 
 jobs:
   run-parser:
@@ -24,7 +24,7 @@ jobs:
 
     - name: Run parser_v2.py
       run: |
-        python v2/parser_v2.py > html/index.html
+        python v2/parser_v2.py > docs/index.html
 
     - name: Commit and push changes
       run: |
