@@ -2,7 +2,7 @@ name: Daily Restaurant Parser
 
 on:
   schedule:
-    - cron: '35 9 * * *'  # Schedule to run at 4 AM every day
+    - cron: '40 9 * * *'  # Schedule to run at 4 AM every day
 
 jobs:
   run-parser:
