@@ -2,6 +2,8 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import datetime
 import requests
+import sys
+
 
 class Meal:
     name = ''
@@ -56,6 +58,13 @@ class Restaurant:
 
     def add_tag(self, tag):
         self.tags.append(tag)
+
+
+def write_out(file, text):
+    if "--console" in sys.argv:
+        print(text, end="")
+    else:
+        file.write(text)
 
 
 # Replace the code that opens the browser with an HTTP request
@@ -116,7 +125,7 @@ for restaurant in restaurants:
     if len(restaurant.get_menu().get_meals()) == 0:
         continue
 
-    print("------- RESTAURACE: " + restaurant.get_name() + " " + restaurant.get_distance() + "--------")
+    # print("------- RESTAURACE: " + restaurant.get_name() + " " + restaurant.get_distance() + "--------")
     # for meal in restaurant.get_menu().get_meals():
     # print in format "meal_index. meal_name - Cena: meal_price" if the meal_price is 0 or null, print ""
     #    price = meal.get_price()
@@ -127,35 +136,35 @@ for restaurant in restaurants:
 # generate html file with menu, use utf-8 encoding and czech language
 # first generate list with all restaurants, on click on the list item navigate to #restaurant-name (U Karla -> #u-karla) anchor
 f = open("index.html", "w", encoding="utf-8")
-f.write("<html><head><meta charset=\"utf-8\"></head><body>")
-f.write("<style>")
+write_out(f, "<html><head><meta charset=\"utf-8\"></head><body>")
+write_out(f, "<style>")
 # make the page pretty
-f.write("body { font-family: Arial, Helvetica, sans-serif; }")
-f.write("h1 { font-size: 30px; }")
-f.write("h2 { font-size: 20px; }")
-f.write("p { font-size: 15px; }")
-f.write("ul { list-style-type: none; margin: 0; padding: 0; overflow: hidden; background-color: #333; }")
-f.write("li { float: left; }")
-f.write("li a { display: block; color: white; text-align: center; padding: 14px 16px; text-decoration: none; }")
-f.write("li a:hover { background-color: #111; }")
+write_out(f, "body { font-family: Arial, Helvetica, sans-serif; }")
+write_out(f, "h1 { font-size: 30px; }")
+write_out(f, "h2 { font-size: 20px; }")
+write_out(f, "p { font-size: 15px; }")
+write_out(f, "ul { list-style-type: none; margin: 0; padding: 0; overflow: hidden; background-color: #333; }")
+write_out(f, "li { float: left; }")
+write_out(f, "li a { display: block; color: white; text-align: center; padding: 14px 16px; text-decoration: none; }")
+write_out(f, "li a:hover { background-color: #111; }")
 # style for each restaurant, restaurants should be next to each other
-f.write(".restaurant { float: left; width: 48%; }")
+write_out(f, ".restaurant { float: left; width: 48%; }")
 # style for tags
-f.write(".tags { float: left; width: 100%; }")
+write_out(f, ".tags { float: left; width: 100%; }")
 # style for toggle button so it looks modern and nice
-f.write(".toggle-button { background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: "
+write_out(f, ".toggle-button { background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: "
         "center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; }")
-f.write("</style>")
+write_out(f, "</style>")
 
-f.write("<h1>Menu dne " + str(datetime.date.today()) + "</h1>")
-f.write("<ul>")
+write_out(f, "<h1>Menu dne " + str(datetime.date.today()) + "</h1>")
+write_out(f, "<ul>")
 for restaurant in restaurants:
     # if restaurant has no menu, skip it
     if len(restaurant.get_menu().get_meals()) == 0:
         continue
-    f.write("<li><a href=\"#" + restaurant.get_name().replace(" ",
+    write_out(f, "<li><a href=\"#" + restaurant.get_name().replace(" ",
                                                               "-").lower() + "\">" + restaurant.get_name() + "</a></li>")
-f.write("</ul>")
+write_out(f, "</ul>")
 
 # here parse all restaurants and their tags, keep in mind their count and then generate the list of tags where the more
 # common tags are bigger. Keep the tags in dictionary with tag name - count
@@ -174,68 +183,68 @@ for restaurant in restaurants:
 sorted_tags = sorted(tags.items(), key=lambda x: x[1], reverse=True)
 
 # toggle button for toggling visibility of .tags div
-f.write("<button class=\"toggle-button\" onclick=\"var x = document.getElementsByClassName('tags')[0]; if ("
+write_out(f, "<button class=\"toggle-button\" onclick=\"var x = document.getElementsByClassName('tags')[0]; if ("
         "x.style.display === 'none') { x.style.display = 'block'; } else { x.style.display = 'none'; "
         "}\">Zobrazit/skrýt tagy</button>")
 
 # generate the list of tags, if user clicks the tag, find all restaurants with this tag and show them
-f.write("<div style=\"display: none\" class=\"tags\">")
-f.write("<h2 class=\"tag\">Tagy</h2>")
-f.write("<ul>")
+write_out(f, "<div style=\"display: none\" class=\"tags\">")
+write_out(f, "<h2 class=\"tag\">Tagy</h2>")
+write_out(f, "<ul>")
 for tag in sorted_tags:
     # a will scroll to first element with class "has-tag-tagname" (javascript function scrollToTag)
-    f.write("<li><a onclick=\"scrollToTag('has-tag-" + tag[0] + "')\">" + tag[0] + " (" + str(tag[1]) + ")</a></li>")
-f.write("</ul>")
-f.write("</div>")
+    write_out(f, "<li><a onclick=\"scrollToTag('has-tag-" + tag[0] + "')\">" + tag[0] + " (" + str(tag[1]) + ")</a></li>")
+write_out(f, "</ul>")
+write_out(f, "</div>")
 
-f.write("<div class=\"wrapper\">")
+write_out(f, "<div class=\"wrapper\">")
 # then write all restaurants with their ids
 for restaurant in restaurants:
     # if restaurant has no menu, skip it
     if len(restaurant.get_menu().get_meals()) == 0:
         continue
-    f.write("<div class=\"restaurant\">")
-    f.write("<h1 id=\"" + restaurant.get_name().replace(" ",
+    write_out(f, "<div class=\"restaurant\">")
+    write_out(f, "<h1 id=\"" + restaurant.get_name().replace(" ",
                                                         "-").lower() + "\"")
-    f.write("/>" + restaurant.get_name() + " (" + restaurant.get_distance() + ") </h1>")
+    write_out(f, "/>" + restaurant.get_name() + " (" + restaurant.get_distance() + ") </h1>")
     for meal in restaurant.get_menu().get_meals():
         # print in format "meal_index. meal_name - Cena: meal_price" if the meal_price is 0 or null, print ""
         price = meal.get_price()
         if price == "0" or price == "" or price == " " or price == " ":
             price = "0 Kč (nebo neuvedeno)"
-        f.write("<p ")
+        write_out(f, "<p ")
 
         if len(restaurant.get_tags()) > 0:
-            f.write(" class=\"tagged has-tag-")
+            write_out(f, " class=\"tagged has-tag-")
             for tag in restaurant.get_tags():
                 # write tag only if meal name contains it
                 if tag in meal.name.lower():
-                    f.write(tag + " has-tag-")
+                    write_out(f, tag + " has-tag-")
 
-            f.write("\"")
+            write_out(f, "\"")
 
-        f.write(">" + str(meal.day) + ". " + meal.name + " - Cena: " + price + "</p>")
-    f.write("</div>")
-f.write("</div>")
+        write_out(f, ">" + str(meal.day) + ". " + meal.name + " - Cena: " + price + "</p>")
+    write_out(f, "</div>")
+write_out(f, "</div>")
 
-f.write("</body>")
-f.write("<script>")
+write_out(f, "</body>")
+write_out(f, "<script>")
 # function to toggle tags
 
 # script for scrolling to first restaurant with class "has-tag-tagname" (scroll smoothly)
-f.write("function scrollToTag(tag) {")
-f.write("var element = document.getElementsByClassName(tag)[0];")
+write_out(f, "function scrollToTag(tag) {")
+write_out(f, "var element = document.getElementsByClassName(tag)[0];")
 # color all elements with classes "tagged" to light blue
-f.write("var tagged = document.getElementsByClassName('tagged');")
-f.write("for (var i = 0; i < tagged.length; i++) {")
-f.write("tagged[i].style.backgroundColor = 'white';")
-f.write("}")
+write_out(f, "var tagged = document.getElementsByClassName('tagged');")
+write_out(f, "for (var i = 0; i < tagged.length; i++) {")
+write_out(f, "tagged[i].style.backgroundColor = 'white';")
+write_out(f, "}")
 # color all elements with class "has-tag-tagname" to lime
-f.write("var elements = document.getElementsByClassName(tag);")
-f.write("for (var i = 0; i < elements.length; i++) {")
-f.write("elements[i].style.backgroundColor = 'lime';")
-f.write("}")
-f.write("element.scrollIntoView({behavior: 'smooth'});")
-f.write("}")
-f.write("</script>")
-f.write("</html>")
+write_out(f, "var elements = document.getElementsByClassName(tag);")
+write_out(f, "for (var i = 0; i < elements.length; i++) {")
+write_out(f, "elements[i].style.backgroundColor = 'lime';")
+write_out(f, "}")
+write_out(f, "element.scrollIntoView({behavior: 'smooth'});")
+write_out(f, "}")
+write_out(f, "</script>")
+write_out(f, "</html>")
