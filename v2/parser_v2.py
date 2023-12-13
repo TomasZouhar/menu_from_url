@@ -70,7 +70,7 @@ def write_out(file, text):
 # Replace the code that opens the browser with an HTTP request
 url = "https://www.menicka.cz/moje-poloha.html?m=menicka&gps=49.210166676258375_16.599495697430932"
 response = requests.get(url)
-soup = BeautifulSoup(response.content, features="docs.parser")
+soup = BeautifulSoup(response.content, features="html.parser")
 
 # get the list of restaurants
 restaurants = []
