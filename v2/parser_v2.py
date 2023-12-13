@@ -135,7 +135,7 @@ for restaurant in restaurants:
 
 # generate docs file with menu, use utf-8 encoding and czech language
 # first generate list with all restaurants, on click on the list item navigate to #restaurant-name (U Karla -> #u-karla) anchor
-f = open("../docs/index.html", "w", encoding="utf-8")
+f = open("index.html", "w", encoding="utf-8")
 write_out(f, "<docs><head><meta charset=\"utf-8\"></head><body>")
 write_out(f, "<style>")
 # make the page pretty
