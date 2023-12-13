@@ -2,7 +2,8 @@ name: Daily Restaurant Parser
 
 on:
   schedule:
-    - cron: '40 9 * * *'  # Schedule to run at 4 AM every day
+    - cron: '40 2 * * *'  # Schedule to run at 4 AM every day
+  workflow_dispatch:  # Enable manual triggering
 
 jobs:
   run-parser:
